@@ -5,12 +5,12 @@
   <title>국회 회의록 챗봇</title>
   <style>
     body { font-family: Arial; max-width: 700px; margin: auto; padding: 20px; }
-    #chat { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: scroll; }
+    #chat { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: scroll; background: #fafafa; }
     .user { color: blue; margin: 5px 0; }
     .bot { color: green; margin: 5px 0; }
     #inputBox { display: flex; margin-top: 10px; }
     #message { flex: 1; padding: 10px; }
-    button { padding: 10px; }
+    button { padding: 10px; margin-left: 5px; }
   </style>
 </head>
 <body>
@@ -19,31 +19,46 @@
   <div id="inputBox">
     <input id="message" placeholder="질문을 입력하세요..." />
     <button onclick="sendMessage()">전송</button>
+    <button onclick="clearChat()">기록삭제</button>
   </div>
 
   <script>
+    const chat = document.getElementById("chat");
+    const API_URL = "http://<RUNPOD_IP>:8000";
+
+    async function loadHistory() {
+      const res = await fetch(`${API_URL}/history`);
+      const data = await res.json();
+      chat.innerHTML = "";
+      data.forEach(item => {
+        const roleClass = item.role === "user" ? "user" : "bot";
+        chat.innerHTML += `<div class="${roleClass}"><b>${item.role}:</b> ${item.message}</div>`;
+      });
+      chat.scrollTop = chat.scrollHeight;
+    }
+
     async function sendMessage() {
       const msgBox = document.getElementById("message");
-      const chat = document.getElementById("chat");
       const userMsg = msgBox.value;
       if (!userMsg) return;
 
-      // 사용자 메시지 추가
-      chat.innerHTML += `<div class="user"><b>사용자:</b> ${userMsg}</div>`;
-      msgBox.value = "";
-
-      // 서버에 요청
-      const res = await fetch("http://<RUNPOD_IP>:8000/chat", {
+      const res = await fetch(`${API_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMsg })
       });
-      const data = await res.json();
-
-      // 모델 응답 추가
-      chat.innerHTML += `<div class="bot"><b>봇:</b> ${data.answer}</div>`;
-      chat.scrollTop = chat.scrollHeight;
+      await res.json();
+      msgBox.value = "";
+      loadHistory();
     }
+
+    async function clearChat() {
+      await fetch(`${API_URL}/clear`, { method: "POST" });
+      loadHistory();
+    }
+
+    // 초기 로딩 시 기록 불러오기
+    loadHistory();
   </script>
 </body>
 </html>
