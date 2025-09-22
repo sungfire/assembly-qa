@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>국회 회의록 챗봇</title>
+  <style>
+    body { font-family: Arial; max-width: 700px; margin: auto; padding: 20px; }
+    #chat { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: scroll; }
+    .user { color: blue; margin: 5px 0; }
+    .bot { color: green; margin: 5px 0; }
+    #inputBox { display: flex; margin-top: 10px; }
+    #message { flex: 1; padding: 10px; }
+    button { padding: 10px; }
+  </style>
+</head>
+<body>
+  <h1>국회 회의록 챗봇</h1>
+  <div id="chat"></div>
+  <div id="inputBox">
+    <input id="message" placeholder="질문을 입력하세요..." />
+    <button onclick="sendMessage()">전송</button>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const msgBox = document.getElementById("message");
+      const chat = document.getElementById("chat");
+      const userMsg = msgBox.value;
+      if (!userMsg) return;
+
+      // 사용자 메시지 추가
+      chat.innerHTML += `<div class="user"><b>사용자:</b> ${userMsg}</div>`;
+      msgBox.value = "";
+
+      // 서버에 요청
+      const res = await fetch("http://<RUNPOD_IP>:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMsg })
+      });
+      const data = await res.json();
+
+      // 모델 응답 추가
+      chat.innerHTML += `<div class="bot"><b>봇:</b> ${data.answer}</div>`;
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
+</body>
+</html>
