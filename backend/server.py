@@ -6,12 +6,12 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import time
 
-# 🔸 Firebase 초기화
-cred = credentials.Certificate("serviceAccountKey.json")  # Firebase 콘솔에서 발급
+# Firebase 초기화
+cred = credentials.Certificate("serviceAccountKey.json") 
 firebase_admin.initialize_app(cred)
 db = firestore.client()
 
-# 🔸 모델 로딩
+# 모델 로딩
 MODEL_PATH = "/workspace/2.AI학습모델파일/1. 질의응답/nia15-polyglot-5.8b-koalpaca-v1.1b-qna-best"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 model = AutoModelForCausalLM.from_pretrained(
@@ -33,14 +33,14 @@ class Query(BaseModel):
 
 @app.post("/chat")
 def chat(query: Query):
-    # 🔸 사용자 입력 저장
+    # 사용자 입력 저장
     db.collection("chat_history").add({
         "role": "user",
         "message": query.message,
         "timestamp": firestore.SERVER_TIMESTAMP
     })
 
-    # 🔸 모델 추론
+    # 모델 추론
     inputs = tokenizer(query.message, return_tensors="pt").to("cuda")
     if "token_type_ids" in inputs:
         del inputs["token_type_ids"]
@@ -55,7 +55,7 @@ def chat(query: Query):
     )
     answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-    # 🔸 모델 답변 저장
+    # 모델 답변 저장
     db.collection("chat_history").add({
         "role": "bot",
         "message": answer,
