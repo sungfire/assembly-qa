@@ -1,0 +1,33 @@
+<!-- 완전 축대칭: 원형 링 + 중앙 책 아이콘 -->
+<svg width="128" height="128" viewBox="0 0 128 128"
+     xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Assembly Chatbot Logo"
+     preserveAspectRatio="xMidYMid meet">
+  <!-- 배경 원형 링 (축대칭) -->
+  <defs>
+    <radialGradient id="grad" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#0066ffff"/>
+      <stop offset="100%" stop-color="#009ebeff"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 바깥 링: 두께 일정, 중심 (64,64) -->
+  <circle cx="64" cy="64" r="54" fill="none" stroke="url(#grad)" stroke-width="10"/>
+
+  <!-- 안쪽 얇은 링(선택): 시각적 안정감 -->
+  <circle cx="64" cy="64" r="34" fill="none" stroke="#e6f4ff" stroke-opacity="0.8" stroke-width="2"/>
+
+  <!-- 중앙 ‘열린 책’ 아이콘 (완전 좌우·상하 대칭) -->
+  <g fill="none" stroke="#00fff7ff" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <!-- 책 등(중앙) -->
+    <line x1="64" y1="44" x2="64" y2="84"/>
+    <!-- 왼쪽 표지 -->
+    <path d="M64 46 C56 42, 44 42, 36 46 L36 82 C44 78, 56 78, 64 82"/>
+    <!-- 오른쪽 표지 -->
+    <path d="M64 46 C72 42, 84 42, 92 46 L92 82 C84 78, 72 78, 64 82"/>
+    <!-- 양쪽 내부 줄(문서 느낌, 상하 대칭) -->
+    <line x1="48" y1="58" x2="58" y2="58"/>
+    <line x1="70" y1="58" x2="80" y2="58"/>
+    <line x1="48" y1="68" x2="58" y2="68"/>
+    <line x1="70" y1="68" x2="80" y2="68"/>
+  </g>
+</svg>
