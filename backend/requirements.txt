@@ -1,0 +1,16 @@
+# FastAPI 서버
+fastapi==0.115.0
+uvicorn==0.30.6
+
+# Firebase
+firebase-admin==6.5.0
+
+# 모델 관련 (transformers 기반 KoAlpaca 등)
+transformers==4.44.2
+torch==2.3.1
+accelerate==0.33.0
+safetensors==0.4.3
+
+# 기타 유틸
+python-multipart==0.0.9
+pydantic==2.8.2

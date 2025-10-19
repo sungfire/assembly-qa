@@ -1,64 +1,13 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>국회 회의록 챗봇</title>
-  <style>
-    body { font-family: Arial; max-width: 700px; margin: auto; padding: 20px; }
-    #chat { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: scroll; background: #fafafa; }
-    .user { color: blue; margin: 5px 0; }
-    .bot { color: green; margin: 5px 0; }
-    #inputBox { display: flex; margin-top: 10px; }
-    #message { flex: 1; padding: 10px; }
-    button { padding: 10px; margin-left: 5px; }
-  </style>
-</head>
-<body>
-  <h1>국회 회의록 챗봇</h1>
-  <div id="chat"></div>
-  <div id="inputBox">
-    <input id="message" placeholder="질문을 입력하세요..." />
-    <button onclick="sendMessage()">전송</button>
-    <button onclick="clearChat()">기록삭제</button>
-  </div>
-
-  <script>
-    const chat = document.getElementById("chat");
-    const API_URL = "http://<RUNPOD_IP>:8000";
-
-    async function loadHistory() {
-      const res = await fetch(`${API_URL}/history`);
-      const data = await res.json();
-      chat.innerHTML = "";
-      data.forEach(item => {
-        const roleClass = item.role === "user" ? "user" : "bot";
-        chat.innerHTML += `<div class="${roleClass}"><b>${item.role}:</b> ${item.message}</div>`;
-      });
-      chat.scrollTop = chat.scrollHeight;
-    }
-
-    async function sendMessage() {
-      const msgBox = document.getElementById("message");
-      const userMsg = msgBox.value;
-      if (!userMsg) return;
-
-      const res = await fetch(`${API_URL}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMsg })
-      });
-      await res.json();
-      msgBox.value = "";
-      loadHistory();
-    }
-
-    async function clearChat() {
-      await fetch(`${API_URL}/clear`, { method: "POST" });
-      loadHistory();
-    }
-
-    // 초기 로딩 시 기록 불러오기
-    loadHistory();
-  </script>
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>frontend</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Firebase credentials
+backend/serviceAccountKey.json
+
+# Virtual environments
+.venv/
+frontend/.env

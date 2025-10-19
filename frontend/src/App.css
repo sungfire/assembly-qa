@@ -1,0 +1,545 @@
+/* ===== Global Reset ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  font-family: "Noto Sans KR", sans-serif;
+  background: linear-gradient(135deg, #e8f0fe 0%, #ffffff 100%);
+  color: #333;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ===== 전체 채팅 레이아웃 ===== */
+.chat-page {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  max-width: 100vw;
+  overflow: hidden;
+  background: transparent;
+}
+
+.sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #4e8df5 0%, #00b4d8 100%);
+  color: #f4faff;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px;
+  gap: 20px;
+  box-shadow: 8px 0 30px rgba(78, 141, 245, 0.25);
+}
+
+.new-session-button {
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 14px;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 14px 16px;
+  transition: all 0.25s ease;
+}
+
+.new-session-button:hover {
+  background: rgba(255, 255, 255, 0.28);
+  transform: translateY(-1px);
+}
+
+.session-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.session-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.session-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+}
+
+.session-item {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-radius: 12px;
+  color: rgba(244, 250, 255, 0.95);
+  cursor: pointer;
+  font-size: 0.95rem;
+  padding: 12px 14px;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.session-item:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.session-item.active {
+  background: #ffffff;
+  color: #126ba8;
+  font-weight: 600;
+  box-shadow: 0 8px 18px rgba(78, 141, 245, 0.26);
+}
+
+.session-placeholder {
+  color: rgba(244, 250, 255, 0.8);
+  font-size: 0.95rem;
+  text-align: center;
+  margin-top: 40px;
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100vh;
+  background: #ffffff;
+  box-shadow: none;
+  border-radius: 0;
+  overflow: hidden;
+  border-left: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+/* ===== 헤더 ===== */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 28px;
+  background: linear-gradient(90deg, #4e8df5, #00b4d8);
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.logout {
+  background-color: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.logout:hover {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+/* ===== 채팅 영역 ===== */
+.chat-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 40px;
+  overflow-y: auto;
+  background-color: #f9fafb;
+}
+
+/* 공통 말풍선 */
+.message {
+  display: inline-block;
+  max-width: 85%;
+  margin: 8px 0;
+  padding: 14px 18px;
+  border-radius: 14px;
+  line-height: 1.5;
+  word-wrap: break-word;
+  animation: fadeIn 0.25s ease;
+}
+
+/* 🔹 사용자 메시지 — 오른쪽 정렬 */
+.message.user {
+  align-self: flex-end;  /* 오른쪽 정렬 */
+  background: linear-gradient(135deg, #4e8df5, #00b4d8);
+  color: white;
+  border-bottom-right-radius: 6px;
+  text-align: right;
+}
+
+/* 🔹 AI 메시지 — 왼쪽 정렬 */
+.message.bot {
+  align-self: flex-start; /* 왼쪽 정렬 */
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  color: #333;
+  border-bottom-left-radius: 6px;
+  text-align: left;
+}
+
+.message.user::after {
+  content: "";
+  display: inline-block;
+  margin-left: 8px;
+}
+
+.message.bot::before {
+  content: "";
+  display: inline-block;
+  margin-right: 8px;
+}
+
+/* ===== 입력 영역 ===== */
+.input-area {
+  display: flex;
+  padding: 14px 24px;
+  border-top: 1px solid #e5e7eb;
+  background-color: #ffffff;
+}
+
+.input-box {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.input-box:focus {
+  border-color: #4e8df5;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(78, 141, 245, 0.15);
+}
+
+.send-button {
+  margin-left: 12px;
+  padding: 12px 22px;
+  background: linear-gradient(135deg, #4e8df5, #00b4d8);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.send-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(78, 141, 245, 0.3);
+}
+
+/* 애니메이션 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== 반응형 디자인 ===== */
+@media (max-width: 1000px) {
+  .chat-page {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: column;
+    padding: 24px 20px;
+    box-shadow: 0 14px 28px rgba(15, 23, 42, 0.18);
+  }
+
+  .chat-container {
+    height: auto;
+    min-height: 60vh;
+    border-left: none;
+    border-top: 1px solid rgba(148, 163, 184, 0.2);
+  }
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    gap: 16px;
+  }
+
+  .session-list {
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 12px;
+  }
+
+  .session-item {
+    min-width: 180px;
+  }
+
+  .chat-box {
+    padding: 20px 24px;
+  }
+
+  .input-area {
+    padding: 12px 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .session-item {
+    min-width: 150px;
+    font-size: 0.85rem;
+  }
+
+  .chat-box {
+    padding: 16px 18px;
+  }
+
+  .send-button {
+    padding: 10px 18px;
+  }
+}
+
+
+/* ===== Login Screen (브랜드형 개선 버전) ===== */
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(135deg, #4e8df5 0%, #00b4d8 100%);
+  font-family: "Noto Sans KR", sans-serif;
+}
+
+/* 중앙 로그인 박스 */
+.login-box {
+  width: 380px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(14px);
+  padding: 48px 42px;
+  border-radius: 20px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUp 0.6s ease;
+}
+
+/* 로고 섹션 */
+.login-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.login-logo h1 {
+  color: white;
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* 스피너 */
+.react-logo {
+  width: 36px;
+  height: 36px;
+  animation: spin 6s linear infinite;
+  filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7));
+}
+
+/* 부제 */
+.login-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  margin-bottom: 22px;
+}
+
+/* 입력창 */
+.input {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 13px 15px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  outline: none;
+  color: #333;
+  background: rgba(255, 255, 255, 0.95);
+  transition: box-shadow 0.3s;
+}
+
+.input:focus {
+  box-shadow: 0 0 0 3px rgba(78, 141, 245, 0.4);
+}
+
+/* 버튼 */
+.button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 13px 0;
+  background: white;
+  color: #0077cc;
+  font-weight: 600;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.button:hover {
+  transform: translateY(-2px);
+  background: #f5f5f5;
+}
+
+/* 애니메이션 */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 반응형 */
+@media (max-width: 480px) {
+  .login-box {
+    width: 88%;
+    padding: 36px 28px;
+  }
+
+  .login-logo h1 {
+    font-size: 1.6rem;
+  }
+
+  .header {
+    font-size: 1rem;
+    padding: 12px 18px;
+  }
+
+  .message {
+    max-width: 85%;
+    font-size: 0.9rem;
+  }
+
+  .send-button {
+    padding: 10px 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-box {
+    width: 85%;
+    padding: 32px 24px;
+  }
+
+  .login-container h2 {
+    font-size: 1.6rem;
+  }
+}
+
+/* ===== Auto Dark Mode ===== */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #121212;
+    color: #e0e0e0;
+  }
+
+  .chat-container {
+    background: #1e1e1e;
+  }
+
+  .chat-box {
+    background-color: #181818;
+  }
+
+  .message.bot {
+    background-color: #2b2b2b;
+    border-color: #333;
+    color: #f5f5f5;
+  }
+
+  .input-area {
+    background-color: #1e1e1e;
+    border-top-color: #333;
+  }
+
+  .input-box {
+    background-color: #2b2b2b;
+    color: #e0e0e0;
+    border-color: #444;
+  }
+
+  .input-box:focus {
+    box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.3);
+  }
+}
+
+/* AI 응답 중 ... 애니메이션 */
+.loading-bubble {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  color: #333;
+  border-radius: 14px;
+  padding: 14px 22px;
+  margin-top: 10px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  min-width: 60px;
+}
+
+/* 점이 하나씩 늘어났다 줄어드는 애니메이션 */
+.loading-bubble::after {
+  content: '';
+  animation: dots 1.5s steps(3, end) infinite;
+}
+
+@keyframes dots {
+  0% {
+    content: '.';
+  }
+  33% {
+    content: '..';
+  }
+  66% {
+    content: '...';
+  }
+  100% {
+    content: '.';
+  }
+}
+
+.main-layout {
+  display: flex;
+  height: 100vh;
+  background: #f5f7fa;
+  overflow: hidden;
+  font-family: 'Pretendard', 'Inter', sans-serif;
+}

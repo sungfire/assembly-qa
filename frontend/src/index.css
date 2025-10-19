@@ -1,0 +1,95 @@
+/* ===== Reset & Global ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --color-primary: #4e8df5;
+  --color-secondary: #00b4d8;
+  --color-bg: #f4f6f8;
+  --color-text: #222;
+  --radius: 10px;
+  --transition: 0.3s ease;
+  font-family: "Noto Sans KR", system-ui, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+/* 기본 링크 스타일 */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition);
+}
+a:hover {
+  color: var(--color-secondary);
+}
+
+/* Body 기본 설정 */
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: var(--color-bg);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 2vh;
+}
+
+/* 스크롤바 디자인 */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(150, 150, 150, 0.25);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(150, 150, 150, 0.5);
+}
+
+/* 버튼 공통 스타일 */
+button {
+  border-radius: var(--radius);
+  border: none;
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 텍스트 선택 색상 */
+::selection {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+/* ===== 다크 모드 ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #121212;
+    --color-text: #e0e0e0;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  a {
+    color: var(--color-secondary);
+  }
+  a:hover {
+    color: var(--color-primary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
