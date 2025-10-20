@@ -30,6 +30,18 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+PROMPT_TEMPLATE = (
+    "### 지시: 당신은 국회 회의록 전문가입니다. 사용자의 질문에 회의록 내용을 바탕으로 정확하고 간결하게 답변하세요.\n\n"
+    "### 맥락:\n"
+    "{context}\n\n"
+    "### 질문:\n"
+    "{question}\n\n"
+    "### 답변:"
+)
+DEFAULT_CONTEXT = "이전 대화 내용이 없습니다."
+ROLE_LABELS = {"user": "사용자", "bot": "AI"}
+
+
 class ChatRequest(BaseModel):
     uid: Optional[str] = None
     message: str
@@ -62,6 +74,38 @@ def _serialize_timestamp(value):
     return None
 
 
+def _get_session_context(session_doc_ref, limit: int = 10) -> str:
+    if session_doc_ref is None:
+        return DEFAULT_CONTEXT
+
+    messages_ref = session_doc_ref.collection("messages")
+    docs = (
+        messages_ref.order_by("timestamp", direction=firestore.Query.DESCENDING)
+        .limit(limit)
+        .stream()
+    )
+    entries = []
+    for doc_snapshot in docs:
+        data = doc_snapshot.to_dict() or {}
+        text = (data.get("text") or "").strip()
+        if not text:
+            continue
+        role_label = ROLE_LABELS.get(data.get("role"), "알 수 없음")
+        entries.append(f"{role_label}: {text}")
+
+    if not entries:
+        return DEFAULT_CONTEXT
+
+    entries.reverse()
+    return "\n".join(entries)
+
+
+def _build_prompt(question: str, context: Optional[str]) -> str:
+    context_value = (context or "").strip() or DEFAULT_CONTEXT
+    question_value = question.strip()
+    return PROMPT_TEMPLATE.format(context=context_value, question=question_value)
+
+
 @app.post("/api/chat")
 def chat(request: ChatRequest):
     message = request.message.strip()
@@ -69,7 +113,8 @@ def chat(request: ChatRequest):
         raise HTTPException(status_code=400, detail="Message is required.")
 
     if not request.uid:
-        answer = _generate_answer(message)
+        prompt = _build_prompt(message, DEFAULT_CONTEXT)
+        answer = _generate_answer(prompt)
         history_ref = db.collection("chat_history")
         history_ref.add(
             {
@@ -119,8 +164,9 @@ def chat(request: ChatRequest):
     if session_doc_ref is None:
         session_doc_ref = sessions_ref.document(session_id)
 
-    messages_ref = session_doc_ref.collection("messages")
+    context_text = _get_session_context(session_doc_ref)
 
+    messages_ref = session_doc_ref.collection("messages")
     messages_ref.add(
         {
             "role": "user",
@@ -129,7 +175,8 @@ def chat(request: ChatRequest):
         }
     )
 
-    answer = _generate_answer(message)
+    prompt = _build_prompt(message, context_text)
+    answer = _generate_answer(prompt)
 
     messages_ref.add(
         {
